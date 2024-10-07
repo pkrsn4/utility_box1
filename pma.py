@@ -36,8 +36,8 @@ def get_tray_format(slideRefs):
 def activate_pma_session(credentials):
     """
     args:
-									credentials: A dictionary containing pma_credentials i.e, url, username, password.
-									eg, credentials['url'], credentials['username'], credentials['password']									
+    	credentials: A dictionary containing pma_credentials i.e, url, username, password.
+    	eg, credentials['url'], credentials['username'], credentials['password']									
     """
     sessionID=core.connect(credentials['url'], credentials['username'], credentials['password'])
     
