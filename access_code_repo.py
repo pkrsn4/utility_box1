@@ -11,8 +11,7 @@ from tifffile import imread, imsave
 from pathlib import Path
 from pma_python import core
 
-prefix  = '/workspace/_saahil/projects'
-code_repo_path = f'{prefix}/essentials/code_repo'
+code_repo_path = f'{prefix}/UtilityBox'
 sys.path.append(code_repo_path)
 
 import utils.utils as u
