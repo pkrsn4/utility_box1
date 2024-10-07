@@ -20,13 +20,8 @@ def download_caib_slide(slide_path, bucket_name='caib-wsi', caib_keys_path=Path(
             if slide_path.stem in key:
                 break
         download_file(bucket_name, key, slide_path)
-
-def get_s3_object(host):
-    s3 = getConnection_pathadmin(host)
-    return s3
-    
-
-def getConnection_pathadmin(host, access_key_id, secret_key):   
+        
+def get_s3_object(host, access_key_id, secret_key):   
     secure = True
     s3 = boto3.client('s3',aws_access_key_id=access_key_id, aws_secret_access_key=secret_key, use_ssl=secure, endpoint_url = host)
     return s3
