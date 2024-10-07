@@ -1,3 +1,7 @@
+host=''
+secret_key=''
+access_key_id=''
+
 import boto3
 from tqdm.auto import tqdm
 from pathlib import Path
@@ -20,8 +24,8 @@ def download_caib_slide(slide_path, bucket_name='caib-wsi', caib_keys_path=Path(
             if slide_path.stem in key:
                 break
         download_file(bucket_name, key, slide_path)
-        
-def get_s3_object(host, access_key_id, secret_key):   
+    
+def get_s3_object():   
     secure = True
     s3 = boto3.client('s3',aws_access_key_id=access_key_id, aws_secret_access_key=secret_key, use_ssl=secure, endpoint_url = host)
     return s3
