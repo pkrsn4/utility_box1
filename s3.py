@@ -21,8 +21,7 @@ def download_caib_slide(slide_path, bucket_name='caib-wsi', caib_keys_path=Path(
                 break
         download_file(bucket_name, key, slide_path)
 
-def get_s3_object():
-    host = "http://10.100.76.46:9020"
+def get_s3_object(host):
     s3 = getConnection_pathadmin(host)
     return s3
     
