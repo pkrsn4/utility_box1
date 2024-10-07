@@ -16,7 +16,8 @@ def get_device(gpu_id):
             raise ValueError(f"Invalid GPU ID {gpu_id}. Available GPU IDs: 0 to {torch.cuda.device_count() - 1}.")
         return torch.device(f'cuda:{gpu_id}')
     else:
-        raise RuntimeError("CUDA is not available. No GPU devices found.")
+        return 'cpu'
+        #raise RuntimeError("CUDA is not available. No GPU devices found.")
         
 
 def check_dl_framework_detections():
