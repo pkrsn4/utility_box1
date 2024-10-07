@@ -33,11 +33,13 @@ def get_tray_format(slideRefs):
     
     return tray_format
 
-def activate_pma_session(args = None):
+def activate_pma_session(credentials):
     """
-    sessionID=core.connect(args['url'], args['username'], args['password'])
+    args:
+									credentials: A dictionary containing pma_credentials i.e, url, username, password.
+									eg, credentials['url'], credentials['username'], credentials['password']									
     """
-    sessionID=core.connect(args['url'], args['username'], args['password'])
+    sessionID=core.connect(credentials['url'], credentials['username'], credentials['password'])
     
     return sessionID
 
