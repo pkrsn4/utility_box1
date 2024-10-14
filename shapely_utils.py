@@ -1,15 +1,38 @@
 from tqdm.auto import tqdm 
+import numpy as np
+import math
+import cv2
 
-from shapely.geometry import Polygon, Point, MultiPolygon
+from shapely.geometry import Polygon, Point, MultiPolygon, box
 from shapely.geometry import shape as Shape
+from shapely.geometry import mapping
 #from shapely.ops import unary_union
 from shapely import wkt
-from shapely.wkt import loads # Converts wkt file to Shapely Polygons
+from shapely.wkt import loads
 from shapely.validation import make_valid
 
-#import numpy as np
-import math
 
+
+def get_geoms_from_mask(mask, rescale):
+    contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    geoms = []
+    for contour in contours:
+        if len(contour)<4:
+            continue
+        contour=(contour*rescale).astype(int)
+        contour_points = [tuple(point[0]) for point in contour]
+        geom = Polygon(contour_points)
+        geoms.append(geom)
+    return geoms
+
+def get_background(geom):
+    bounds=geom.bounds
+    bounding_box=box(bounds[0] - 1, bounds[1] - 1, bounds[2] + 1, bounds[3] + 1)
+    background=bounding_box.difference(geom)
+    return background
+
+def get_box(x, y, width, height):
+    return box(x, y, x + width, y + height)
 
 def validate_and_repair(polygon):
     if not polygon.is_valid:

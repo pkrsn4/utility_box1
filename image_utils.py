@@ -6,7 +6,6 @@ import cv2
 from tqdm.auto import tqdm
 import matplotlib.pyplot as plt
 from tifffile import imread, imsave
-from utils.utils import start_timer, stop_timer, clear_output
 import warnings
 from scipy.ndimage import binary_erosion
 from mycolorpy import colorlist as mcp
@@ -297,7 +296,6 @@ def extract_patches_with_coordinates(image, patch_dims, overlap_dims):
     - patches: list, a list of extracted patches
     - coordinates: list, a list of tuples containing the (start_row, start_col) coordinates of each patch
     """
-    _ = start_timer()
 
     h, w = patch_dims
     oh, ow = overlap_dims
@@ -327,9 +325,7 @@ def extract_patches_with_coordinates(image, patch_dims, overlap_dims):
             
             flag +=1
     
-    clear_output()
     print(f"Complete!")
     print(f"Extracted {flag} patches.")
     
-    _ = stop_timer()
     return np.array(patches), coordinates
