@@ -80,7 +80,6 @@ def create_folder(file_path):
         print('Directory created successfully')
         
 
-
 def get_memory_occupied(python_object):
     memory_usage=sys.getsizeof(python_object) / (1024 ** 3)
     print(f'Size occupied: {round(memory_usage, 2)} GB')

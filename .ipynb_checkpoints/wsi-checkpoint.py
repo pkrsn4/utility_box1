@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import ocv
 
-import Shapely
+import shapely_utils
 from skimage import measure
 from skimage.morphology import remove_small_holes
 
@@ -98,8 +98,7 @@ class WSI:
         c,h=ocv.get_contours(tissue_mask)
         scale,rescale=self.scale_mpp(target_mpp)
         wkts=ocv.process_contour_hierarchy(c,h, contour_mpp=target_mpp,rescale_factor=rescale)
-        polys=[Shapely.loads(wkt['master_wkt']) for wkt in wkts]
-        #polys=[Shapely.make_valid(Shapely.loads(wkt['master_wkt'])) for wkt in wkts]
+        polys=[shapely_utils.loads(wkt['master_wkt']) for wkt in wkts]
         return polys
 
     def get_patch_polybox(self, polyBox):

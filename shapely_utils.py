@@ -1,8 +1,7 @@
 from tqdm.auto import tqdm 
 
-from shapely.geometry import Polygon, Point
+from shapely.geometry import Polygon, Point, MultiPolygon
 from shapely.geometry import shape as Shape
-from shapely.geometry import MultiPolygon
 #from shapely.ops import unary_union
 from shapely import wkt
 from shapely.wkt import loads # Converts wkt file to Shapely Polygons

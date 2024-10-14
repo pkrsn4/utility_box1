@@ -11,10 +11,7 @@ import cv2
 import utils.image_utils as iu
 import compath.tissue as tu
 import ocv
-import Shapely
 
-
-import Shapely
 Image.MAX_IMAGE_PIXELS = None
 
 default_layerID = 11
