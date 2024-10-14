@@ -1,16 +1,136 @@
 from tqdm.auto import tqdm 
+import numpy as np
+import math
+import cv2
+import random
 
-from shapely.geometry import Polygon, Point
+from shapely.geometry import LineString, Polygon, MultiPolygon, MultiLineString, Point, box
 from shapely.geometry import shape as Shape
-from shapely.geometry import MultiPolygon
+from shapely.geometry import mapping
 #from shapely.ops import unary_union
 from shapely import wkt
-from shapely.wkt import loads # Converts wkt file to Shapely Polygons
+from shapely.wkt import loads
 from shapely.validation import make_valid
 
-#import numpy as np
-import math
+def sample_from_geom(geom, geom_limit, patch_size, overlap, n_samples):
+    coords_list=[]
+    start_x,start_y,stop_x,stop_y=get_geom_slicing_bounds(geom, geom_limit, patch_size)
+    sampled=0
+    while sampled!=n_samples:
+        x=random.randint(start_x, stop_x)
+        y=random.randint(start_y, stop_y)
+    
+        sampled_box=get_box(x,y,patch_size,patch_size)
+        if geom.intersects(sampled_box):
+            coords_list.append((x,y))
+            sampled+=1
+    return coords_list
 
+def slice_geom(geom, geom_limit, patch_size, overlap):
+    coords_list=[]
+    start_x,start_y,stop_x,stop_y=get_geom_slicing_bounds(geom, geom_limit, patch_size)
+    for x in range(start_x,stop_x, int(overlap)):
+        for y in range(start_y,stop_y, int(overlap)):
+            sampled_box=get_box(x,y,patch_size,patch_size)
+            if geom.intersects(sampled_box):
+                coords_list.append((x,y))
+    return coords_list
+
+def sample_box_touching_geom(geom,height,width):
+    condition=True
+    while condition:
+        x,y=sample_point_within_geom(geom)
+        random_box=get_box(x, y, height, width)
+
+        if geom.intersection(random_box):
+            condition=False
+    return random_box
+
+def get_geom_slicing_bounds(geom, geom_limit, patch_size):
+    min_x, min_y, max_x, max_y = geom.bounds
+    lim_min_x, lim_min_y, lim_max_x, lim_max_y = geom_limit.bounds
+    
+    width=int(max_x - min_x)
+    height=int(max_y - min_y)
+
+    max_dim=max(width, height)
+    if patch_size>=max_dim:
+        diff=patch_size-max_dim
+        delta=diff+patch_size+random.randint(0,patch_size)
+        
+    else:
+        diff=max_dim-patch_size
+        delta=diff+patch_size+random.randint(0,patch_size)
+    
+
+    start_x=min_x-delta
+    if start_x<lim_min_x:
+        start_x=min_x
+    
+    start_y=min_y-delta
+    if start_y<lim_min_y: 
+        start_y=min_y
+    
+    stop_x=max_x+delta
+    if stop_x>lim_max_x:
+        stop_x=max_x
+        
+    stop_y=max_y+delta
+    if stop_y>lim_max_y:
+        stop_y=max_y
+    return int(start_x),int(start_y),int(stop_x),int(stop_y)
+
+def get_geom_coordinates(geom):
+    contours = []
+    
+    if isinstance(geom, LineString):
+        contours.append(list(geom.coords))
+        
+    elif isinstance(geom, Polygon):
+        contours.append(list(geom.boundary.coords))
+    
+    elif isinstance(geom, MultiPolygon):
+        for poly in geom.geoms:
+            contours.extend(get_geom_coordinates(poly))
+
+    elif isinstance(geom, MultiLineString):
+        for line in geom.geoms:
+            contours.append(list(line.coords))
+            
+    elif isinstance(geom, Point):
+        contours.append([geom.x, geom.y])
+    
+    return contours
+
+def sample_point_within_geom(geom):
+    minx, miny, maxx, maxy = geom.bounds
+    while True:
+        x_rand = int(random.uniform(minx, maxx))
+        y_rand = int(random.uniform(miny, maxy))
+        random_point = Point([(x_rand, y_rand)])
+        if geom.contains(random_point):
+            return (x_rand, y_rand)
+
+def get_geoms_from_mask(mask, rescale):
+    contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    geoms = []
+    for contour in contours:
+        if len(contour)<4:
+            continue
+        contour=(contour*rescale).astype(int)
+        contour_points = [tuple(point[0]) for point in contour]
+        geom = Polygon(contour_points)
+        geoms.append(geom)
+    return geoms
+
+def get_background(geom):
+    bounds=geom.bounds
+    bounding_box=box(bounds[0] - 1, bounds[1] - 1, bounds[2] + 1, bounds[3] + 1)
+    background=bounding_box.difference(geom)
+    return background
+
+def get_box(x, y, width, height):
+    return box(x, y, x + width, y + height)
 
 def validate_and_repair(polygon):
     if not polygon.is_valid:
