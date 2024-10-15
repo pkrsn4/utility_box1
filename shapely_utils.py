@@ -54,14 +54,8 @@ def get_geom_slicing_bounds(geom, geom_limit, patch_size):
     height=int(max_y - min_y)
 
     max_dim=max(width, height)
-    if patch_size>=max_dim:
-        diff=patch_size-max_dim
-        delta=diff+patch_size+random.randint(0,patch_size)
-        
-    else:
-        diff=max_dim-patch_size
-        delta=diff+patch_size+random.randint(0,patch_size)
-    
+    diff=abs(patch_size-max_dim)
+    delta=diff+patch_size+random.randint(0,patch_size)
 
     start_x=min_x-delta
     if start_x<lim_min_x:
