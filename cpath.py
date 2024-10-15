@@ -161,14 +161,14 @@ class CPDataset(BaseDataset):
         self.positive_cases=data_distribution[data_distribution['ann_name'].notna()]
         self.negative_cases=data_distribution[data_distribution['ann_name'].isna()]
 
-    def sample_mixed_rows(self, n_samples=1):
-        return self.data_distribution.sample(n_samples).to_dict(orient='records')
+    def sample_mixed_rows(self, n_samples=1, replace=True):
+        return self.data_distribution.sample(n_samples, replace=replace).to_dict(orient='records')
         
-    def sample_positive_rows(self, n_samples=1):
-        return self.positive_cases.sample(n_samples).to_dict(orient='records')
+    def sample_positive_rows(self, n_samples=1, replace=True):
+        return self.positive_cases.sample(n_samples, replace=replace).to_dict(orient='records')
 
-    def sample_negative_rows(self, n_samples=1):
-        return self.negative_cases.sample(n_samples).to_dict(orient='records')
+    def sample_negative_rows(self, n_samples=1, replace=True):
+        return self.negative_cases.sample(n_samples, replace=replace).to_dict(orient='records')
 
     def get_wsi_object(self, sample):
         self.wsi=WSI(f"{sample['wsi_folder']}/{sample['wsi_name']}", mpp=sample['mpp'])
