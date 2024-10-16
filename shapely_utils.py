@@ -16,48 +16,44 @@ from shapely import wkt
 from shapely.wkt import loads
 from shapely.validation import make_valid
 
-def get_polygon_coordinates(geom):
-    assert isinstance(geom, Polygon)
-    holes=[]
-    
-    for interior in geom.interiors:
-        holes.append(list(interior.coords))
-    contours = list(geom.exterior.coords)
-    
-    return contours, holes
-
 def get_geom_coordinates(geom):
-    contours=[]
-    holes=[]
+    contours = []
+    holes = []
+    
     if isinstance(geom, Point):
-        contours.append([geom.x, geom.y])
+        contours.append([[geom.x, geom.y]])  # Wrap coordinates in a list
         
     elif isinstance(geom, MultiPoint):
         for point in geom.geoms:
-            contours.append([point.x, point.y])
+            contours.append([point.x, point.y])  # Single list for each point
             
     elif isinstance(geom, LineString):
-        contours.append(list(geom.coords))
+        contours.append(list(geom.coords))  # Keep coordinates as a list of tuples
         
     elif isinstance(geom, MultiLineString):
         for line in geom.geoms:
-            contours.append(list(line.coords))
-    
+            contours.append(list(line.coords))  # Append each line's coordinates
+            
     elif isinstance(geom, LinearRing):
-        contours.append(list(geom.coords))
+        contours.append(list(geom.coords))  # Add LinearRing coordinates as one list
 
     elif isinstance(geom, Polygon):
-        poly_contours, poly_holes = get_polygon_coordinates(geom)
-        contours = contours+poly_contours
-        holes= holes+poly_holes
+        contours.append(list(geom.exterior.coords))  # Exterior coordinates as one list
         
+        for interior in geom.interiors:
+            holes.append(list(interior.coords))  # Append each hole's coordinates
+
     elif isinstance(geom, MultiPolygon):
         for poly in geom.geoms:
-            contours.extend(get_geom_coordinates(poly))
+            poly_contours, poly_holes = get_geom_coordinates(poly)
+            contours.extend(poly_contours)  # Add polygon contours, one level deep
+            holes.extend(poly_holes)        # Add polygon holes, one level deep
 
     elif isinstance(geom, GeometryCollection):
         for geometry in geom.geoms:
-            contours.extend(get_geom_coordinates(geometry))
+            geom_contours, geom_holes = get_geom_coordinates(geometry)
+            contours.extend(geom_contours)  # Add geometry contours, one level deep
+            holes.extend(geom_holes)        # Add geometry holes, one level deep
             
     return contours, holes
 
