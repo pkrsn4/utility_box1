@@ -16,6 +16,40 @@ from shapely import wkt
 from shapely.wkt import loads
 from shapely.validation import make_valid
 
+
+def flatten_geoms(geom):
+    """
+    Flatten a list of geometries, ensuring that all elements are Polygons.
+    """
+    flat_geoms = []
+    if isinstance(geom, MultiPolygon):
+        for geom in geom.geoms:
+            flat_geoms.append(geom)
+    elif isinstance(geom, Polygon):
+        flat_geoms.append(geom)
+    elif isinstance(geom, GeometryCollection):
+        for geom in geom.geoms:
+            flat_geoms.append(geom)
+    else:
+        print(f"{geom.geom_type}")
+        flat_geoms.append(geom)
+            
+    return flat_geoms
+
+def fix_geom(geom, max_attempts=10):
+    attempts = 0
+    while not geom.is_valid and attempts < max_attempts:
+        #print(f"Attempt {attempts + 1}: Polygon is invalid, trying to fix...")
+        
+        geom = geom.buffer(0)
+        
+        if not geom.is_valid:
+            geom = make_valid(polygon)
+        if attempts==8:
+            geom = remove_duplicates_valid(geom)
+        attempts += 1
+    return geom
+
 def get_geom_coordinates(geom):
     contours = []
     holes = []
