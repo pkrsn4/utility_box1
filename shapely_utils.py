@@ -4,13 +4,52 @@ import math
 import cv2
 import random
 
-from shapely.geometry import LineString, Polygon, MultiPolygon, MultiLineString, Point, box
+from shapely.geometry import box
+from shapely.geometry import (
+    LineString, Polygon, MultiPolygon, MultiLineString, Point, MultiPoint, 
+    GeometryCollection, LinearRing
+)
 from shapely.geometry import shape as Shape
 from shapely.geometry import mapping
 #from shapely.ops import unary_union
 from shapely import wkt
 from shapely.wkt import loads
 from shapely.validation import make_valid
+
+def get_geom_coordinates(geom):
+    contours = []
+    if isinstance(geom, Point):
+        contours.append([geom.x, geom.y])
+        
+    elif isinstance(geom, MultiPoint):
+        for point in geom.geoms:
+            contours.append([point.x, point.y])
+            
+    elif isinstance(geom, LineString):
+        contours.append(list(geom.coords))
+        
+    elif isinstance(geom, MultiLineString):
+        for line in geom.geoms:
+            contours.append(list(line.coords))
+    
+    elif isinstance(geom, LinearRing):
+        contours.append(list(geom.coords))
+
+    elif isinstance(geom, Polygon):
+        contours.append(list(geom.exterior.coords))  # Outer boundary
+        for interior in geom.interiors:
+            contours.append(list(interior.coords))  # Inner boundaries (holes)
+            
+    elif isinstance(geom, MultiPolygon):
+        for poly in geom.geoms:
+            contours.extend(get_geom_coordinates(poly))
+
+    elif isinstance(geom, GeometryCollection):
+        for geometry in geom.geoms:
+            contours.extend(get_geom_coordinates(geometry))
+            
+    return contours
+
 
 def sample_from_geom(geom, geom_limit, patch_size, overlap, n_samples):
     coords_list=[]
@@ -73,32 +112,6 @@ def get_geom_slicing_bounds(geom, geom_limit, patch_size):
     if stop_y>lim_max_y:
         stop_y=max_y
     return int(start_x),int(start_y),int(stop_x),int(stop_y)
-
-def get_geom_coordinates(geom):
-    contours = []
-    
-    if isinstance(geom, LineString):
-        contours.append(list(geom.coords))
-        
-    elif isinstance(geom, Polygon):
-        contours.append(list(geom.boundary.coords))
-    
-    elif isinstance(geom, MultiPolygon):
-        for poly in geom.geoms:
-            contours.extend(get_geom_coordinates(poly))
-
-    elif isinstance(geom, MultiLineString):
-        for line in geom.geoms:
-            contours.append(list(line.coords))
-            
-    elif isinstance(geom, Point):
-        contours.append([geom.x, geom.y])
-
-    elif isinstance(geom, GeometryCollection):
-        for poly in geom.geoms:
-            contours.extend(get_geom_coordinates(poly))
-    
-    return contours
 
 def sample_point_within_geom(geom):
     minx, miny, maxx, maxy = geom.bounds
