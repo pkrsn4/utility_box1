@@ -159,7 +159,7 @@ def get_color_dict_geojson():
     }
     return(color_dict)
 
-def plot_overlay(image, mask, save_path = False,figsize=(10,10), plot=True, dpi=300, plot=True):
+def plot_overlay(image, mask, save_path = False,figsize=(10,10), dpi=300, plot=True):
     """
     """
     plt.figure(figsize=figsize)
