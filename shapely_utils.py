@@ -49,7 +49,7 @@ def get_geom_coordinates(geom):
         for geometry in geom.geoms:
             contours.extend(get_geom_coordinates(geometry))
             
-    return contours
+    return contours, holes
 
 
 def sample_from_geom(geom, geom_limit, patch_size, overlap, n_samples):
