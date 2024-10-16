@@ -64,7 +64,7 @@ def get_wkt(X,Y):
     return(wkt)
 
 
-def plot_image_series(images, title= None, save_path= False, figsize =(15, 5)):
+def plot_image_series(images, title= None, save_path= False, figsize =(15, 5), plot=True):
     num_images = len(images)
     
     if num_images < 1:
@@ -89,11 +89,13 @@ def plot_image_series(images, title= None, save_path= False, figsize =(15, 5)):
     
     if save_path:
         plt.savefig(save_path, bbox_inches='tight', dpi = 300)
-        print('Image saved') 
 
-    plt.show()
+    if plot:
+        plt.show()
+    else:
+        plt.close(fig) 
         
-def plot_overlay_series(images, masks, title = None, save_path = False, figsize =(15, 5)):
+def plot_overlay_series(images, masks, title = None, save_path = False, figsize =(15, 5), plot=True):
     num_images = len(images)
     
     if num_images < 1:
@@ -119,9 +121,11 @@ def plot_overlay_series(images, masks, title = None, save_path = False, figsize 
     
     if save_path:
         plt.savefig(save_path, bbox_inches='tight', dpi = 500)
-        print('Image saved') 
     
-    plt.show()
+    if plot:
+        plt.show()
+    else:
+        plt.close(fig)
 
 def get_color_dict():
     """
@@ -155,7 +159,7 @@ def get_color_dict_geojson():
     }
     return(color_dict)
 
-def plot_overlay(image, mask, save_path = False,figsize=(10,10), plot=True, dpi=300):
+def plot_overlay(image, mask, save_path = False,figsize=(10,10), plot=True, dpi=300, plot=True):
     """
     """
     plt.figure(figsize=figsize)
@@ -169,8 +173,10 @@ def plot_overlay(image, mask, save_path = False,figsize=(10,10), plot=True, dpi=
     
     if plot:
         plt.show()
+    else:
+        plt.close()
 
-def plot_image(image, figsize=(5,5), save_path = False):
+def plot_image(image, figsize=(5,5), save_path = False, plot=True):
     """
     """
     plt.figure(figsize=figsize)
@@ -181,7 +187,10 @@ def plot_image(image, figsize=(5,5), save_path = False):
         plt.savefig(save_path, bbox_inches='tight', pad_inches=0, transparent=True, dpi = 300)
         print('Image saved')
     
-    plt.show()
+    if plot:
+        plt.show()
+    else:
+        plt.close()
 
 def scale_mpp(current_mpp,target_mpp):
     """
