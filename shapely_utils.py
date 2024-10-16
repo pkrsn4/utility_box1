@@ -16,8 +16,18 @@ from shapely import wkt
 from shapely.wkt import loads
 from shapely.validation import make_valid
 
+def get_polygon_coordinates(geom):
+    assert isinstance(geom, Polygon)
+    holes=[]
+    
+    for interior in geom.interiors:
+        holes.append(list(interior.coords))
+    contours = list(geom.exterior.coords)
+    
+    return contours, holes
+
 def get_geom_coordinates(geom):
-    contours = []
+    contours=[]
     holes=[]
     if isinstance(geom, Point):
         contours.append([geom.x, geom.y])
@@ -37,10 +47,10 @@ def get_geom_coordinates(geom):
         contours.append(list(geom.coords))
 
     elif isinstance(geom, Polygon):
-        contours.append(list(geom.exterior.coords))  # Outer boundary
-        for interior in geom.interiors:
-            holes.append(list(interior.coords))  # Inner boundaries (holes)
-            
+        poly_contours, poly_holes = get_polygon_coordinates(geom)
+        contours = contours+poly_contours
+        holes= holes+poly_holes
+        
     elif isinstance(geom, MultiPolygon):
         for poly in geom.geoms:
             contours.extend(get_geom_coordinates(poly))
