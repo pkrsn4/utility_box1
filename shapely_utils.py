@@ -93,6 +93,10 @@ def get_geom_coordinates(geom):
             
     elif isinstance(geom, Point):
         contours.append([geom.x, geom.y])
+
+    elif isinstance(geom, GeometryCollection):
+        for poly in geom.geoms:
+            contours.extend(get_geom_coordinates(poly))
     
     return contours
 
