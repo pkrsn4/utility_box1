@@ -18,6 +18,7 @@ from shapely.validation import make_valid
 
 def get_geom_coordinates(geom):
     contours = []
+    holes=[]
     if isinstance(geom, Point):
         contours.append([geom.x, geom.y])
         
@@ -38,7 +39,7 @@ def get_geom_coordinates(geom):
     elif isinstance(geom, Polygon):
         contours.append(list(geom.exterior.coords))  # Outer boundary
         for interior in geom.interiors:
-            contours.append(list(interior.coords))  # Inner boundaries (holes)
+            holes.append(list(interior.coords))  # Inner boundaries (holes)
             
     elif isinstance(geom, MultiPolygon):
         for poly in geom.geoms:
