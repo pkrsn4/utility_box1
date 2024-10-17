@@ -316,25 +316,21 @@ def extract_patches_with_coordinates(image, patch_dims, overlap_dims):
     
     print("Extracting Patches")
     for i in range(0, image.shape[0], h - oh):
-        for j in range(0, image.shape[1], w - ow):
-            start_row = i
-            start_col = j
-            end_row = min(i + h, image.shape[0])
-            end_col = min(j + w, image.shape[1])
-
-            # Adjust end_row and end_col to make the patch size consistent
-            if end_row - start_row < h:
-                start_row = max(end_row - h, 0)
-            if end_col - start_col < w:
-                start_col = max(end_col - w, 0)
-
-            patch = image[start_row:end_row, start_col:end_col]
-            patches.append(patch)
-            coordinates.append((start_row, start_col))
+        if i+h>image.shape[0]:
+            i=image.shape[0]-h
             
+        for j in range(0, image.shape[1], w - ow):
+            if j+w>image.shape[1]:
+                j=image.shape[1]-w
+    
+            patch = image[i:i+h, j:j+w,:]
+
+            patches.append(patch)
+            coordinates.append((i, j))
             flag +=1
     
     print(f"Complete!")
     print(f"Extracted {flag} patches.")
     
     return np.array(patches), coordinates
+    
