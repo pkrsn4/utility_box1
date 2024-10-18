@@ -116,7 +116,7 @@ def plot_overlay_series(images, masks, title = None, save_path = False, figsize 
         else:
             ax.set_title(title[i])
         ax.imshow(images[i])
-        ax.imshow(masks[i])
+        ax.imshow(get_random_overlay(images[i],masks[i]))
         ax.axis('off')
     
     if save_path:
