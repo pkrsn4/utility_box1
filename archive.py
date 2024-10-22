@@ -1,11 +1,4 @@
-import math
-import statistics as stat
-
-from skimage.color import rgb2hed, hed2rgb
-from skimage.measure import regionprops as RegionProps
-
-import sqlalchemy
-from sqlalchemy import create_engine, MetaData, Table, select, inspect
+import time
 
 class Timer:
     def __init__(self, show_progress = False, iterations =  None):
