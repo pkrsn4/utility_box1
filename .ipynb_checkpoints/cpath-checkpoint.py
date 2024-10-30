@@ -3,8 +3,6 @@ import shapely_utils
 
 import pandas as pd
 from openslide import OpenSlide
-import tiffslide as openslide
-
 from pathlib import Path
 import numpy as np
 import cv2
