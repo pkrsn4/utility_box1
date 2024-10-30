@@ -50,6 +50,9 @@ def clear_output():
         # If not in Jupyter, try to clear terminal output
         print("\033c", end="")  # This clears the terminal screen (works on Unix-like systems)
 
+def round_to_nearest_even(x):
+    return round(x / 2) * 2
+    
 def start_timer():
     
     """
