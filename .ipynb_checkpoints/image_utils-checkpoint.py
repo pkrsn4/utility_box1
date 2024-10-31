@@ -39,8 +39,53 @@ def hex_to_rgb(hex_color):
     
     return (r, g, b)
 
-def get_rgb_colors(n):
-    clrs=mcp.gen_color(cmap='Spectral_r',n=n)
+def get_cmap(index):
+    """
+    This function returns a colormap based on the given index. The colormaps are divided into categories:
+    
+    1. Sequential: Smooth transition through shades of a single color.
+       - Index 0-4: Blues, Greens, Reds, Purples, Oranges
+       
+    2. Diverging: Move from one color to another, useful for showing deviation from a center.
+       - Index 5-9: Spectral, coolwarm, RdBu, PiYG, BrBG
+       
+    3. Perceptually Uniform: Designed to appear uniformly spaced, even for people with color vision deficiencies.
+       - Index 10-14: viridis, plasma, inferno, magma, cividis
+       
+    4. Cyclic: Colormaps that wrap around, useful for cyclic data (e.g., phase, angle).
+       - Index 15-16: twilight, hsv
+       
+    5. Miscellaneous: Other colormaps representing natural phenomena or broader ranges.
+       - Index 17-20: rainbow, terrain, ocean, cubehelix
+    """
+    colormaps = [
+        # Sequential
+        "Blues", "Greens", "Reds", "Purples", "Oranges",
+        # Diverging
+        "Spectral", "coolwarm", "RdBu", "PiYG", "BrBG",
+        # Perceptually Uniform
+        "viridis", "plasma", "inferno", "magma", "cividis",
+        # Cyclic
+        "twilight", "hsv",
+        # Miscellaneous
+        "rainbow", "terrain", "ocean", "cubehelix"
+    ]
+
+    if 0 <= index < len(colormaps):
+        return colormaps[index]
+    else:
+        raise ValueError("Index out of range. Please select an index between 0 and 20.")
+
+def get_rgb_colors(n, cmap='Spectral_r'):
+    '''
+    cmap options
+    Perceptually Uniform Colormaps:
+        'viridis': A popular colormap with green, blue, and yellow.
+        'plasma': A high-contrast colormap with purples, reds, and yellow.
+        'inferno': Black to yellow, through reds and purples.
+        'magma': Dark purple to yellowish tones.
+    '''
+    clrs=mcp.gen_color(cmap=cmap,n=n)
     color_list=[hex_to_rgb(clr) for clr in clrs]
     return color_list
 

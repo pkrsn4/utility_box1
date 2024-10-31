@@ -1,4 +1,5 @@
 import cv2
+import geojson
 import numpy as np
 
 def get_multipolygon_geojson_feature(contours, idx_map, label, color, scale_factor, show_pbar= True):
@@ -22,7 +23,7 @@ def get_multipolygon_geojson_feature(contours, idx_map, label, color, scale_fact
                 inner_contour = contours[inner_idx]
                 if inner_contour.shape[0]<4:
                     continue
-                inner_geojson_contour = get_geojson_contour(inner_contour, scale_factor=wsi._factor1)
+                inner_geojson_contour = get_geojson_contour(inner_contour, scale_factor=scale_factor)
                 geojson_contour.append(inner_geojson_contour)
                 
         geojson_polygons.append(geojson_contour)
