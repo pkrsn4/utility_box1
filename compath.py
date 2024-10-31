@@ -1,8 +1,10 @@
+import cv2
 import warnings
 import numpy as np
+from pathlib import Path
 from openslide import OpenSlide
 from tiffslide import TiffSlide
-
+from random_utils import round_to_nearest_even
 
 from torchvision import transforms
 from torch.utils.data import DataLoader
@@ -10,10 +12,11 @@ from torch.utils.data import Dataset as BaseDataset
 
 
 class InitWSI():
-    def __init__(self, path, mpp=None):
+    def __init__(self, wsi_path, mpp=None):
 
         self.wsi_path = Path(wsi_path)
         self.wsi = OpenSlide(self.wsi_path)
+        self.mpp = mpp
         
         if self.wsi.level_count==1:
             self.wsi = TiffSlide(wsi_path)
@@ -63,25 +66,26 @@ class InitWSI():
         return scale,rescale
         
     def get_mpp(self):
-        if self.wsi_type=='TS':
-            mpp_x = self.wsi.properties.get('tiffslide.mpp-x')
-            mpp_y = self.wsi.properties.get('tiffslide.mpp-y')
-            self.mpp=mpp_x
-            if mpp_x!=mpp_y:
-                warnings.warn("mpp_x is not equal to mpp_y.", UserWarning)
-    
-        elif self.wsi_type=='OS':
-            mpp_x = self.wsi.properties.get('openslide.mpp-x')
-            mpp_y = self.wsi.properties.get('openslide.mpp-y')
-            self.mpp=mpp_x
-            if mpp_x!=mpp_y:
-                warnings.warn("mpp_x is not equal to mpp_y.", UserWarning)
-                
-        else:
-            self.mpp=None
-    
-        if self.mpp==None:
-            raise ValueError("unable to calculate mpp, provide manually,")
+        if self.mpp is None:
+            if self.wsi_type=='TS':
+                mpp_x = self.wsi.properties.get('tiffslide.mpp-x')
+                mpp_y = self.wsi.properties.get('tiffslide.mpp-y')
+                self.mpp=mpp_x
+                if mpp_x!=mpp_y:
+                    warnings.warn("mpp_x is not equal to mpp_y.", UserWarning)
+        
+            elif self.wsi_type=='OS':
+                mpp_x = self.wsi.properties.get('openslide.mpp-x')
+                mpp_y = self.wsi.properties.get('openslide.mpp-y')
+                self.mpp=mpp_x
+                if mpp_x!=mpp_y:
+                    warnings.warn("mpp_x is not equal to mpp_y.", UserWarning)
+                    
+            else:
+                self.mpp=None
+        
+            if self.mpp==None:
+                raise ValueError("unable to calculate mpp, provide manually,")
 
     def get_region(self, x, y ,w, h, level):
         return self.wsi.read_region(
